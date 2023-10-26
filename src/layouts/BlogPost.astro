@@ -9,99 +9,52 @@ type Props = CollectionEntry<'blog'>['data'] & {
   frontmatter?: Record<any, any>
 }
 
-const { title, description, pubDate, updatedDate, heroImage, frontmatter } =
-  Astro.props
+const { frontmatter, ...post } = Astro.props
+
+const title = post.title ?? frontmatter?.title
+const description = post.description ?? frontmatter?.description
+const heroImage = post.heroImage ?? frontmatter?.heroImage
+const pubDate = post.pubDate ?? frontmatter?.pubDate
+const updatedDate = post.updatedDate ?? frontmatter?.updatedDate
 ---
 
 <html lang="en">
   <head>
-    <BaseHead
-      title={title || frontmatter?.title}
-      description={description || frontmatter?.description}
-    />
-    <style>
-      main {
-        width: calc(100% - 2em);
-        max-width: 100%;
-        margin: 0;
-      }
-      .hero-image {
-        width: 100%;
-      }
-      .hero-image img {
-        display: block;
-        margin: 0 auto;
-        border-radius: 12px;
-        box-shadow: var(--box-shadow);
-      }
-      .prose {
-        width: 720px;
-        max-width: calc(100% - 2em);
-        margin: auto;
-        padding: 1em;
-        color: rgb(var(--gray-dark));
-      }
-      .title {
-        margin-bottom: 1em;
-        padding: 1em 0;
-        text-align: center;
-        line-height: 1;
-      }
-      .title h1 {
-        margin: 0 0 0.5em 0;
-      }
-      .date {
-        margin-bottom: 0.5em;
-        color: rgb(var(--gray));
-      }
-      .last-updated-on {
-        font-style: italic;
-      }
-    </style>
+    <BaseHead title={title} description={description} />
   </head>
 
   <body>
     <Header />
-    <main>
+    <main class="w-[calc(100%_-_2em)] w-max-full m-0">
       <article>
-        <div class="hero-image">
-          {
-            heroImage && (
-              <img width={1020} height={510} src={heroImage} alt="" />
-            )
-          }
-          {
-            frontmatter?.heroImage && (
+        {
+          heroImage && (
+            <div class="w-full">
               <img
                 width={1020}
                 height={510}
-                src={frontmatter?.heroImage}
+                src={heroImage}
                 alt=""
+                class="block mx-auto my-0 rounded-xl shadow-img"
               />
-            )
-          }
-        </div>
-        <div class="prose">
-          <div class="title">
-            <div class="date">
-              <FormattedDate date={pubDate || frontmatter?.pubDate} />
+            </div>
+          )
+        }
+        <div
+          class="w-[720px] w-max-[calc(100%_-_2em)] m-auto p-5 text-slate-800"
+        >
+          <div class="mb-7 py-5 px-0 text-center leading-1">
+            <div class="mb-2.5 text-slate-500">
+              <FormattedDate date={pubDate} />
               {
                 updatedDate && (
-                  <div class="last-updated-on">
+                  <div class="italic">
                     Last updated on <FormattedDate date={updatedDate} />
                   </div>
                 )
               }
-              {
-                frontmatter?.updatedDate && (
-                  <div class="last-updated-on">
-                    Last updated on{' '}
-                    <FormattedDate date={frontmatter?.updatedDate} />
-                  </div>
-                )
-              }
             </div>
-            <h1>{title || frontmatter?.title}</h1>
+            <h1 class="m-0 mb-7">{title}</h1>
             <hr />
           </div>
           <slot />
